@@ -1,0 +1,33 @@
+name: handmvnet
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pytorch=2.0.1
+  - torchvision=0.15.2
+  - pytorch-cuda=11.7
+  - mkl<2024
+  - numpy<2
+  - scipy
+  - pillow
+  - matplotlib
+  - pyyaml
+  - tqdm
+  - pip:
+      - lightning==2.0.6
+      - pytorch-lightning==2.0.6
+      - lightning-cloud==0.5.37
+      - opencv-python
+      - plotly
+      - kaleido
+      - einops
+      - webdataset
+      - braceexpand
+      - transforms3d
+      - trimesh
+      - pyrender
+      - tensorboard
+      - git+https://github.com/hassony2/manopth.git

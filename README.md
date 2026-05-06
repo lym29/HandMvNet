@@ -30,6 +30,17 @@ In this work, we present HandMvNet, one of the first real-time method designed t
 - Pytorch 2.0.1
 - Lightning 2.0.6
 
+Create and activate the conda environment:
+```
+conda env create -f environment.yml
+conda activate handmvnet
+```
+
+Verify that PyTorch can access CUDA:
+```
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+```
+
 # Datasets
 We used following three datasets:
 - [DexYCB](https://dex-ycb.github.io/)
