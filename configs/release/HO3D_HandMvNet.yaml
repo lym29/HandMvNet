@@ -1,9 +1,9 @@
 name: handmvnet
-base_output_dir: ./outputs/debug
+base_output_dir: /data1/DATA/HandMvNet/output/
 data:
   name: ho3d
   batch_size: 16
-  dataset_dir: data/ho3d
+  dataset_dir: /data1/DATA/POEM-v2/HO3D_mv/
   mask_size: 32
   depth_size: 32
   heatmap_size: 32

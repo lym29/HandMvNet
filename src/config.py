@@ -54,7 +54,8 @@ class Config:
 def main():
     parser = argparse.ArgumentParser(description='Configuration args.')
     parser.add_argument('--config', type=str, required=True, help='Path to the YAML configuration file')
-    parser.add_argument('--num-gpus', type=int, default=1, help='Number of GPUs')
+    parser.add_argument('--num-gpus', type=int, default=None, help='Number of GPUs')
+    parser.add_argument('--gpu-ids', type=str, default=None, help='Comma-separated physical GPU IDs to use, e.g. 1,7')
     parser.add_argument('--checkpoint', type=str, help='Path to the model checkpoint')
     args = parser.parse_args()
 
@@ -63,8 +64,21 @@ def main():
     loaded_cfg["checkpoint"] = args.checkpoint
     
     if "train.py" in detect_caller():
-        loaded_cfg["gpu_ids"] = ','.join(map(str, range(args.num_gpus)))
-        loaded_cfg["train"]["gpus"] = args.num_gpus
+        configured_gpu_ids = loaded_cfg["train"].get("gpu_ids")
+        requested_gpu_ids = args.gpu_ids if args.gpu_ids is not None else configured_gpu_ids
+
+        if requested_gpu_ids is not None:
+            gpu_ids = ",".join(gpu_id.strip() for gpu_id in str(requested_gpu_ids).split(",") if gpu_id.strip())
+            num_gpus = len(gpu_ids.split(","))
+            if args.num_gpus is not None and args.num_gpus != num_gpus:
+                raise ValueError(f"--num-gpus={args.num_gpus} does not match --gpu-ids={gpu_ids}")
+        else:
+            num_gpus = args.num_gpus if args.num_gpus is not None else loaded_cfg["train"].get("gpus", 1)
+            gpu_ids = ','.join(map(str, range(num_gpus)))
+
+        loaded_cfg["gpu_ids"] = gpu_ids
+        loaded_cfg["train"]["gpus"] = num_gpus
+        loaded_cfg["train"]["gpu_ids"] = gpu_ids
         loaded_cfg["slurm_job_id"] = os.getenv("SLURM_JOB_ID")
         loaded_cfg["git_hash"] = get_git_short_hash_and_commit_date()
 

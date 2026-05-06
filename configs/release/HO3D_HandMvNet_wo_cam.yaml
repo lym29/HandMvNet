@@ -1,15 +1,15 @@
 name: handmvnet
-base_output_dir: ./outputs/debug
+base_output_dir: /data1/DATA/HandMvNet/ho3d-wo-cam-output/
 data:
   name: ho3d
-  batch_size: 16
-  dataset_dir: data/ho3d
+  batch_size: 48
+  dataset_dir: /data1/DATA/POEM-v2/HO3D_mv/
   mask_size: 32
   depth_size: 32
   heatmap_size: 32
   image_size: 256
   mano_models_dir: src/mano
-  num_workers: 6
+  num_workers: 8
   augment: true
   pad_image: true
   add_val_to_train: true
@@ -37,8 +37,9 @@ train:
   debug: false
   vis_every_n_epochs: 10
   epochs: 100
-  accumulate_batch: 2
+  accumulate_batch: 1
   gpus: 2
+  gpu_ids: "1,7"
   mask_invisible_joints: true
   root_relative: true
   loss_weights:

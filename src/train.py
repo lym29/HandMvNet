@@ -1,20 +1,21 @@
 import os
 import json
 
+from config import cfg
+
+# CUDA_VISIBLE_DEVICES must be set before importing torch/lightning.
+os.environ['CUDA_VISIBLE_DEVICES'] = cfg["gpu_ids"]
+
 import torch
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, ModelSummary
 
-from config import cfg
-from datasets.dexycb import DexYCBDataModule
-from datasets.mvhand import MVHandDataModule
+# from datasets.dexycb import DexYCBDataModule
+# from datasets.mvhand import MVHandDataModule
 from datasets.ho3d import HO3DDataModule
 
 from models.handmvnet import HandMvNet as Model
 
-
-# Set CUDA_VISIBLE_DEVICES environment variable
-os.environ['CUDA_VISIBLE_DEVICES'] = cfg["gpu_ids"]
 
 # Setting the seed
 L.seed_everything(42, workers=True)
@@ -24,12 +25,13 @@ NUM_GPUS = cfg["train"]["gpus"]
 VISIBLE_NUM_GPUS = torch.cuda.device_count()
 assert VISIBLE_NUM_GPUS == NUM_GPUS, f"Number of GPUs mismatch! Expected: {NUM_GPUS}, Got: {VISIBLE_NUM_GPUS}"
 
-ACCUMULATE_BATCH = 2 if ((cfg["data"]["batch_size"] < 64) and (NUM_GPUS < 3)) else 1
-cfg["train"]["accumulate_batch"] = cfg["train"].get("accumulate_batch", ACCUMULATE_BATCH)
+DEFAULT_ACCUMULATE_BATCH = 2 if ((cfg["data"]["batch_size"] < 64) and (NUM_GPUS < 3)) else 1
+ACCUMULATE_BATCH = cfg["train"].get("accumulate_batch", DEFAULT_ACCUMULATE_BATCH)
+cfg["train"]["accumulate_batch"] = ACCUMULATE_BATCH
 
 
 if __name__ == "__main__":
-    print("Visible GPUs:", cfg["train"]["gpus"])
+    print("Visible GPUs:", cfg["gpu_ids"], f"({cfg['train']['gpus']} devices)")
 
     checkpoint_cb = ModelCheckpoint(filename="{epoch}-{step}-{val_mpjpe:.3f}", monitor="val_mpjpe", mode="min", save_last=True)
     summary_cb = ModelSummary(max_depth=2)

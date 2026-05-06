@@ -52,6 +52,7 @@ We used following three datasets:
 # Training:
 ```
 python src/train.py --config configs/release/HO3D_HandMvNet.yaml
+python src/train.py --config configs/release/HO3D_HandMvNet_wo_cam.yaml
 ```
 # Evaluation:
 #### Test the model
