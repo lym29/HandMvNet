@@ -1,14 +1,16 @@
 name: handmvnet
-base_output_dir: ./outputs/debug
+base_output_dir: /data1/DATA/HandMvNet/dexycb-wo-cam-output/
 data:
   name: dexycb
   batch_size: 2
-  dataset_dir: data/dexycb
+  dataset_dir: /data1/DATA/POEM-v2/DexYCB_mv/
+  total_views: 8
+  root_idx: 2
   mask_size: 32
   depth_size: 32
   heatmap_size: 32
   image_size: 256
-  mano_models_dir: src/mano
+  mano_models_dir: /data1/DATA/assets/mano_v1_2/models/
   num_workers: 6
   augment: true
   pad_image: true

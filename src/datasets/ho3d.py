@@ -20,11 +20,12 @@ class HO3DSamplePreprocessor:
         self.NOISE_3D = self.config.get("noise_3d", False)
         self.IS_TRAIN_SET = subset == "train"
 
-        self.total_views = 5
+        self.total_views = self.config.get("total_views", 5)
+        self.root_idx = self.config.get("root_idx", 0)
         self.selected_views = np.array(self.config.get("selected_views", range(self.total_views)))
         self.num_views = len(self.selected_views)
-        self.input_res = (480, 640)  # (h, w)
-        self.scale = 1000            # convert keypoints to milimeters
+        self.input_res = tuple(self.config.get("input_res", (480, 640)))  # (h, w)
+        self.scale = self.config.get("scale", 1000)  # convert keypoints to milimeters
 
         self.full_img_transform = transforms.Compose([
                                     transforms.ToTensor(),
@@ -90,7 +91,7 @@ class HO3DSamplePreprocessor:
         # - Each attribute in `labels.pyd` contains data for multiple cameras. The length of each value 
         #   corresponds to the number of camera views available in the dataset.
 
-        root_idx = 0
+        root_idx = self.root_idx
         labels = sample["label.pyd"]
 
         # ------------ Camera Params -------------
@@ -217,10 +218,11 @@ class HO3DMultiview:
         self.name = type(self).__name__
         self.cfg = config
         self.add_val_to_train = self.cfg.get("add_val_to_train", False)
+        test_dataset_dir = self.cfg.get("test_dataset_dir", self.cfg["dataset_dir"])
         self.data_urls = {
             "train": os.path.join(self.cfg["dataset_dir"], "HO3D_mv_train-{000000..00008}.tar"),
             "val": os.path.join(self.cfg["dataset_dir"], "HO3D_mv_train-{000000..00008}.tar"),
-            "test": os.path.join(self.cfg["dataset_dir"], "HO3D_mv_test-{000000..00002}.tar"),
+            "test": os.path.join(test_dataset_dir, "HO3D_mv_test-{000000..00002}.tar"),
         }
 
     def expand_urls(self, urls: Union[str, List[str]]):

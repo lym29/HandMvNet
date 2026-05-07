@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 from config import cfg
 from datasets.dexycb import DexYCBDataModule
-from datasets.mvhand import MVHandDataModule
+# from datasets.mvhand import MVHandDataModule
 from datasets.ho3d import HO3DDataModule
 
 from models.handmvnet import HandMvNet as Model

@@ -56,13 +56,13 @@ python src/train.py --config configs/release/HO3D_HandMvNet.yaml
 python src/train.py \
   --config configs/release/HO3D_HandMvNet.yaml \
   --checkpoint /data1/DATA/HandMvNet/output/lightning_logs/version_0/checkpoints/last.ckpt
-  
+
 python src/train.py --config configs/release/HO3D_HandMvNet_wo_cam.yaml
 ```
 # Evaluation:
 #### Test the model
 ```
-python src/eval.py --config configs/release/HO3D_HandMvNet.yaml --checkpoint /path/to/checkpoint.ckpt
+python src/eval.py --config configs/release/HO3D_HandMvNet.yaml --checkpoint /data1/DATA/HandMvNet/output/lightning_logs/version_3/checkpoints/epoch=95-step=25560-val_mpjpe=2.133.ckpt
 ```
 #### Inference speed
 ```

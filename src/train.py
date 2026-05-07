@@ -3,14 +3,19 @@ import json
 
 from config import cfg
 
-# CUDA_VISIBLE_DEVICES must be set before importing torch/lightning.
-os.environ['CUDA_VISIBLE_DEVICES'] = cfg["gpu_ids"]
+# CUDA_VISIBLE_DEVICES and temp dirs must be set before importing torch/lightning.
+os.environ["CUDA_VISIBLE_DEVICES"] = cfg["gpu_ids"]
+tmp_dir = os.path.join(cfg["base_output_dir"], "tmp")
+os.makedirs(tmp_dir, exist_ok=True)
+os.environ["TMPDIR"] = tmp_dir
+os.environ["TEMP"] = tmp_dir
+os.environ["TMP"] = tmp_dir
 
 import torch
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, ModelSummary
 
-# from datasets.dexycb import DexYCBDataModule
+from datasets.dexycb import DexYCBDataModule
 # from datasets.mvhand import MVHandDataModule
 from datasets.ho3d import HO3DDataModule
 
@@ -32,6 +37,7 @@ cfg["train"]["accumulate_batch"] = ACCUMULATE_BATCH
 
 if __name__ == "__main__":
     print("Visible GPUs:", cfg["gpu_ids"], f"({cfg['train']['gpus']} devices)")
+    print("TMPDIR:", os.environ["TMPDIR"])
 
     checkpoint_cb = ModelCheckpoint(filename="{epoch}-{step}-{val_mpjpe:.3f}", monitor="val_mpjpe", mode="min", save_last=True)
     summary_cb = ModelSummary(max_depth=2)

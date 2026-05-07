@@ -4,11 +4,12 @@ data:
   name: ho3d
   batch_size: 32
   dataset_dir: /data1/DATA/POEM-v2/HO3D_mv/
+  test_dataset_dir: /data1/DATA/POEM-v2/HO3D_mv_test/
   mask_size: 32
   depth_size: 32
   heatmap_size: 32
   image_size: 256
-  mano_models_dir: src/mano
+  mano_models_dir: /data1/DATA/assets/mano_v1_2/models/
   num_workers: 3
   augment: true
   pad_image: true
