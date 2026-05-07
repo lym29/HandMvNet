@@ -89,8 +89,12 @@ if __name__ == "__main__":
         print(f"{dataset_name} dataset not found.")
         exit()
 
-    print(f"[{rank}]: Starting model training...")
-    history = trainer.fit(model=model, datamodule=dm)
+    ckpt_path = cfg.get("checkpoint")
+    if ckpt_path:
+        print(f"[{rank}]: Resuming training from checkpoint: {ckpt_path}")
+    else:
+        print(f"[{rank}]: Starting model training...")
+    history = trainer.fit(model=model, datamodule=dm, ckpt_path=ckpt_path)
 
     best_model_checkpoint = checkpoint_cb.best_model_path
     if not best_model_checkpoint:
@@ -100,8 +104,10 @@ if __name__ == "__main__":
         print("Validating best model checkpoint...")
         val = trainer.validate(ckpt_path="best", datamodule=dm, verbose=True)
 
-    # save validation results in a file
-    val_file_path = os.path.join(cfg["train"]["vis_dir"],"..", "val.json")
-    with open(val_file_path, "w", encoding="utf-8") as file:
-        json.dump(val, file, indent=2)
-    print("Validation result:", val)
+    if rank == 0:
+        # save validation results next to the Lightning log version directory
+        val_file_path = os.path.abspath(os.path.join(cfg["train"]["vis_dir"], "..", "val.json"))
+        os.makedirs(os.path.dirname(val_file_path), exist_ok=True)
+        with open(val_file_path, "w", encoding="utf-8") as file:
+            json.dump(val, file, indent=2)
+        print("Validation result:", val)

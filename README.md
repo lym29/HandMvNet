@@ -52,6 +52,11 @@ We used following three datasets:
 # Training:
 ```
 python src/train.py --config configs/release/HO3D_HandMvNet.yaml
+
+python src/train.py \
+  --config configs/release/HO3D_HandMvNet.yaml \
+  --checkpoint /data1/DATA/HandMvNet/output/lightning_logs/version_0/checkpoints/last.ckpt
+  
 python src/train.py --config configs/release/HO3D_HandMvNet_wo_cam.yaml
 ```
 # Evaluation:
