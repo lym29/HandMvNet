@@ -1,4 +1,5 @@
 import os
+import math
 from typing import List, Union
 
 import braceexpand
@@ -6,6 +7,7 @@ import lightning as L
 import webdataset as wds
 
 from datasets.ho3d import HO3DSamplePreprocessor
+from datasets.utils import webdataset_nodesplitter
 
 
 class DexYCBMultiview:
@@ -34,7 +36,7 @@ class DexYCBMultiview:
         urls = self.expand_urls(self.data_urls[data_split])
         dataset = wds.WebDataset(
             urls=urls,
-            nodesplitter=wds.split_by_node,
+            nodesplitter=webdataset_nodesplitter(len(urls)),
             workersplitter=wds.split_by_worker,
             shardshuffle=data_split == "train",
             resampled=data_split == "train",
@@ -82,7 +84,7 @@ class DexYCBDataModule(L.LightningDataModule):
             batch_size=self.cfg["batch_size"],
             num_workers=1,
             pin_memory=True,
-        ).with_epoch(self.val_samples // self.cfg["batch_size"])
+        ).with_epoch(math.ceil(self.val_samples / self.cfg["batch_size"]))
 
     def test_dataloader(self):
         return wds.WebLoader(
@@ -90,7 +92,7 @@ class DexYCBDataModule(L.LightningDataModule):
             batch_size=self.cfg["batch_size"],
             num_workers=self.cfg["num_workers"],
             pin_memory=True,
-        ).with_epoch(self.test_samples // self.cfg["batch_size"])
+        ).with_epoch(math.ceil(self.test_samples / self.cfg["batch_size"]))
 
     def predict_dataloader(self):
         return wds.WebLoader(
@@ -98,4 +100,4 @@ class DexYCBDataModule(L.LightningDataModule):
             batch_size=self.cfg["batch_size"],
             num_workers=self.cfg["num_workers"],
             pin_memory=True,
-        ).with_epoch(self.test_samples // self.cfg["batch_size"])
+        ).with_epoch(math.ceil(self.test_samples / self.cfg["batch_size"]))

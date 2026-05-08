@@ -302,3 +302,27 @@ def center_scale_to_box(center, scale):
     ymax = ymin + h
     bbox = [xmin, ymin, xmax, ymax]
     return bbox
+
+
+def webdataset_nodesplitter(num_shards: int):
+    """Pick ``nodesplitter`` for WebDataset under PyTorch Lightning DDP.
+
+    ``webdataset.shardlists.split_by_node`` assigns shard indices
+    ``rank, rank+world_size, ...`` to each process. If ``num_shards < world_size``,
+    some ranks receive no shards and iteration raises
+    "No samples found in dataset; perhaps you have fewer shards than workers."
+
+    When there are too few shards for the DDP world size, return an identity
+    splitter so every rank iterates the full shard list (extra I/O; Lightning
+    still reduces metrics correctly). Uses ``WORLD_SIZE`` from the environment
+    (set by Lightning) so it works before ``torch.distributed`` is initialized.
+    """
+    import os
+    import webdataset as wds
+
+    world_size = int(os.environ.get("WORLD_SIZE", "1"))
+    if num_shards < world_size:
+        def _all_ranks(src, group=None):
+            yield from src
+        return _all_ranks
+    return wds.split_by_node

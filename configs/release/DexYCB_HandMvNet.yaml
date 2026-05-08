@@ -2,7 +2,7 @@ name: handmvnet
 base_output_dir: /data1/DATA/HandMvNet/dexycb-output/
 data:
   name: dexycb
-  batch_size: 16
+  batch_size: 24
   dataset_dir: /data1/DATA/POEM-v2/DexYCB_mv/
   total_views: 8
   root_idx: 2

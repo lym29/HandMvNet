@@ -1,4 +1,5 @@
 import os
+import math
 
 import torch
 import braceexpand
@@ -251,7 +252,7 @@ class HO3DMultiview:
                 urls = [urls[0], urls[-1]]
 
         dataset = wds.WebDataset(urls=urls,
-                                 nodesplitter=wds.split_by_node,
+                                 nodesplitter=webdataset_nodesplitter(len(urls)),
                                  workersplitter=wds.split_by_worker,
                                  shardshuffle=data_split == "train",
                                  resampled=data_split == "train")
@@ -296,21 +297,21 @@ class HO3DDataModule(L.LightningDataModule):
                         batch_size=self.cfg["batch_size"],
                         num_workers=1,
                         pin_memory=True
-                    ).with_epoch(self.val_samples // self.cfg["batch_size"])
+                    ).with_epoch(math.ceil(self.val_samples / self.cfg["batch_size"]))
 
     def test_dataloader(self):
         return wds.WebLoader(self.test_set,
                         batch_size=self.cfg["batch_size"],
                         num_workers=self.cfg["num_workers"],
                         pin_memory=True
-                    ).with_epoch(self.test_samples // self.cfg["batch_size"])
+                    ).with_epoch(math.ceil(self.test_samples / self.cfg["batch_size"]))
 
     def predict_dataloader(self):
         return wds.WebLoader(self.test_set,
                         batch_size=self.cfg["batch_size"],
                         num_workers=self.cfg["num_workers"],
                         pin_memory=True
-                    ).with_epoch(self.test_samples // self.cfg["batch_size"])
+                    ).with_epoch(math.ceil(self.test_samples / self.cfg["batch_size"]))
 
 
 if __name__ == "__main__":
